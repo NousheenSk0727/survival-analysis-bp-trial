@@ -1,18 +1,14 @@
 ```         
----
 title: "Survival Analysis of Blood Pressure Treatment Strategies"
 format: html
 editor: visual
 jupyter: python3
----
 ```
-
 ## Objective
 
 Compare standard (SBP target 140 mmHg) vs. intensive (SBP target 120 mmHg) blood pressure treatment strategies on mortality risk using survival analysis.
 
 **Methods:** Kaplan-Meier estimation, log-rank test, univariate & multivariate Cox proportional hazards regression, proportional hazards assumption diagnostics.
-
 
 ```{python}
 import os
@@ -59,11 +55,11 @@ print(
     }
 )
 
-# ---- Fit KM model ----
+# Fit KM model
 kmf = KaplanMeierFitter()
 groups = [(0, "Standard (0)", "#E7B800"), (1, "Intensive (1)", "#2E9FDF")]
 
-# ---- Plot 1: Full-scale KM curve (with censor marks) ----
+# Plot 1: Full-scale KM curve (with censor marks)
 fig, ax = plt.subplots(figsize=(9, 6))
 for treat_value, label, color in groups:
     mask = BPI_surv["Treat"] == treat_value
@@ -85,7 +81,7 @@ plt.tight_layout()
 plt.savefig("figures/km_curve_full.png", dpi=150)
 plt.show()
 
-# ---- Plot 2: Zoomed KM curve ----
+# Plot 2: Zoomed KM curve 
 fig, ax = plt.subplots(figsize=(9, 6))
 for treat_value, label, color in groups:
     mask = BPI_surv["Treat"] == treat_value
@@ -102,7 +98,7 @@ plt.tight_layout()
 plt.savefig("figures/km_curve_zoom.png", dpi=150)
 plt.show()
 
-# ---- Plot 3: Cumulative mortality (1 - S(t)) ----
+# Plot 3: Cumulative mortality (1 - S(t)) 
 fig, ax = plt.subplots(figsize=(9, 6))
 for treat_value, label, color in groups:
     mask = BPI_surv["Treat"] == treat_value
@@ -118,7 +114,7 @@ plt.tight_layout()
 plt.savefig("figures/cumulative_mortality.png", dpi=150)
 plt.show()
 
-# ---- Log-rank test ----
+# Log-rank test
 group0 = BPI_surv[BPI_surv["Treat"] == 0]
 group1 = BPI_surv[BPI_surv["Treat"] == 1]
 
@@ -136,12 +132,12 @@ print("Log-rank p-value:", round(lr_result.p_value, 6))
 ##Conduct Univariate Cox regression to examine the impact of intensive treatment strategy on survival of patients.
 
 ```{python}
-# ---- Univariate Cox proportional hazards model ----
+# Univariate Cox proportional hazards model
 cph_uni = CoxPHFitter()
 cph_uni.fit(BPI_surv, duration_col="Time", event_col="Death", formula="Treat")
 cph_uni.print_summary()
 
-# ---- Forest plot (equivalent to ggforest) ----
+# Forest plot (equivalent to ggforest) 
 fig, ax = plt.subplots(figsize=(7, 2.5))
 cph_uni.plot(ax=ax)
 plt.title("Univariate Cox — Treatment Effect")
@@ -149,7 +145,7 @@ plt.tight_layout()
 plt.savefig("figures/cox_forest_univariate.png", dpi=150)
 plt.show()
 
-# ---- Cox-predicted survival curves for each treatment group ----
+# Cox-predicted survival curves for each treatment group 
 newdata = pd.DataFrame({"Treat": [0, 1]})
 surv_funcs = cph_uni.predict_survival_function(newdata)
 
@@ -174,7 +170,7 @@ plt.show()
 
 
 ```{python}
-# ---- Read and prepare data ----
+# Read and prepare data
 BPI = pd.read_csv("data/BPIntensiveZZ-2.csv")
 
 # Ensure numeric types (defensive)
@@ -202,7 +198,7 @@ BPI["Triglycerides"] = BPI["Triglycerides"].astype(float)
 BPI["BMI"] = BPI["BMI"].astype(float)
 BPI["total_DDD"] = BPI["total_DDD"].astype(float)
 
-# ---- MULTIVARIATE COX MODEL ----
+# MULTIVARIATE COX MODEL 
 cox_cols = [
     "Time",
     "Death",
@@ -225,7 +221,7 @@ res_cox.print_summary()
 
 
 ```{python}
-# ---- Refit multivariate Cox model (as in the R block) ----
+# Refit multivariate Cox model (as in the R block) 
 cox_cols = [
     "Time",
     "Death",
@@ -243,7 +239,7 @@ res_cox = CoxPHFitter()
 res_cox.fit(BPI_multi, duration_col="Time", event_col="Death")
 res_cox.print_summary()
 
-# ---- Test proportional hazards (PH) assumption ----
+# Test proportional hazards (PH) assumption 
 # lifelines' check_assumptions() is the equivalent of R's cox.zph():
 # it runs a statistical test per covariate AND produces Schoenfeld-residual-style plots.
 ph_test_results = res_cox.check_assumptions(
