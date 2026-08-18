@@ -7,11 +7,11 @@ Compare standard (SBP target 140 mmHg) vs. intensive (SBP target 120 mmHg) blood
 
 **Tools:** Python (`pandas`, `lifelines`, `matplotlib`)
 
----
+
 
 ## 1. Data Overview
 
-Dataset: `BPIntensiveZZ-2.csv` — 9,308 observations, 10 variables.
+Dataset: `BPIntensiveZZ-2.csv` - 9,308 observations, 10 variables.
 
 **Key variables:**
 - `Time` → survival duration (in years)
@@ -20,32 +20,22 @@ Dataset: `BPIntensiveZZ-2.csv` — 9,308 observations, 10 variables.
 - Covariates: `Age`, `Gender`, `Smoking`, `Triglycerides`, `BMI`, `total_DDD`
 
 **Interpretation:**
-- Missingness is minimal — all main survival variables (`Time`, `Death`, `Treat`) are complete.
+- Missingness is minimal - all main survival variables (`Time`, `Death`, `Treat`) are complete.
 - 375 death events out of 9,308 (~4% event rate).
 - Treatment groups are well balanced (~50% per group; 4,656 vs. 4,652), ensuring comparability.
 - Data are well-structured for Cox regression and survival modeling.
 
----
 
 ## 2. Kaplan-Meier Survival Curves & Log-Rank Test
-
-![KM Curve](figures/km_curve_full.png)
-![Zoomed KM Curve](figures/km_curve_zoom.png)
-![Cumulative Mortality](figures/cumulative_mortality.png)
-
 **Interpretation:**
 - The Intensive group maintains a slightly higher survival probability over time compared to the Standard group. The difference is small but consistent.
 - The cumulative mortality plot shows the Intensive group with a lower cumulative event rate, confirming reduced mortality risk.
-- **Log-rank test:** χ² = 7.2 on 1 df, p = 0.007 — statistically significant difference in survival between the two treatment groups.
+- **Log-rank test:** χ² = 7.2 on 1 df, p = 0.007 - statistically significant difference in survival between the two treatment groups.
 - **Conclusion:** Intensive blood pressure treatment significantly improves survival compared to standard treatment.
 
 ---
 
 ## 3. Univariate Cox Proportional Hazards Regression
-
-![Univariate Forest Plot](figures/cox_forest_univariate.png)
-![Cox-Predicted Survival](figures/cox_predicted_survival.png)
-
 **Model output:**
 - HR (Treat) = 0.757
 - 95% CI = [0.617, 0.929]
